@@ -70,7 +70,7 @@ router.put('/:contactId', async (req, res, next) => {
   try {
     const { error } = schemaAddContact.validate(req.body);
     if (error) {
-      throw HttpError(400, error.message)
+      throw HttpError(400, `missing fields`);
     }
     const { contactId } = req.params;
     const result = await contactsService.updateContact(contactId, req.body);
