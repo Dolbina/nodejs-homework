@@ -2,11 +2,11 @@ const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
 
-const { User }  = require("../../models/user");
+const  User   = require("../../models/user");
 
 const { HttpError } = require("../../helpers");
 
-const { ctrlWrapper } = require("../../decorators");
+const  ctrlWrapper  = require("../../decorators/ctrlWrapper");
 
 const { SECRET_KEY } = process.env;
 
@@ -55,11 +55,12 @@ const getCurrent = async (req, res) => {
 
 const logout = async (req, res) => {
     const { _id } = req.user;
-    await User.findByIdAndUpdate(_id,{ token: "" });
+    await User.findByIdAndUpdate(_id, { token: "" });
     res.status(204).json({
         message: "No Content"
-    })
-}
+    });
+   
+};
 
 module.exports = {
   register: ctrlWrapper(register),

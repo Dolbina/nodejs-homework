@@ -1,10 +1,10 @@
 const express = require("express");
 
-const { ctrl }   = require("../../controllers/users/auth");
+const  ctrl    = require("../../controllers/users/auth");
 
 const { validateBody } = require("../../decorators");
 
-const { schemas } = require("../../models/user");
+const  schemas  = require("../../schemas/user-schemas");
 
 const { authenticate } = require("../../middlewares");
 
