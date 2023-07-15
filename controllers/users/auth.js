@@ -68,7 +68,7 @@ const logout = async (req, res) => {
    
 };
 
-
+// змінює тільки поле підписки subscription на одно з цих значень ['starter', 'pro', 'business']
 const updateSubscription = async (req, res) => {
    const { _id } = req.user;
     const result = await User.findByIdAndUpdate(_id, req.body, { new: true }); 
