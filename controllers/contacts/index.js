@@ -15,4 +15,5 @@ module.exports = {
   deleteContact: ctrlWrapper(deleteContact),
   updateContactById: ctrlWrapper(updateContactById),
   updateFavorite: ctrlWrapper(updateFavorite),
+  
 };
