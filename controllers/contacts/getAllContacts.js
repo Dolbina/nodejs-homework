@@ -8,10 +8,10 @@ const getAllContacts = async (req, res) => {
 
   // якщо в параметрах є favorite GET /contacts?favorite=true, тоді фільтрує. Якщо в параметрах є пагінація (скільки контактів на сторінці і яку сторінку треба) GET /contacts?page=1&limit=20, тоді повертає те, що треба в запиті
   if (req.query.favorite) {
-    const result = await Contact.find({ owner, favorite }, {}, { skip, limit });
+    const result = await Contact.find({ owner, favorite }, null, { skip, limit });
     res.json(result);
   } else {
-    const result = await Contact.find({ owner }, {}, { skip, limit });
+    const result = await Contact.find({ owner }, null, { skip, limit });
     res.json(result);
   }
 };

@@ -1,6 +1,10 @@
 const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
+const fs = require("fs/promises");
+const path = require("path");
+const gravatar = require("gravatar");
+const Jimp = require("jimp");
 
 const  User   = require("../../models/user");
 
@@ -10,20 +14,24 @@ const  ctrlWrapper  = require("../../decorators/ctrlWrapper");
 
 const { SECRET_KEY } = process.env;
 
+const avatarDir = path.resolve("public", "avatars");
+
 const register = async (req, res) => {
-    const { email,password } = req.body;
+    const { email,password,subscription } = req.body;
     const user = await User.findOne({ email });
     
     if (user) {
         throw HttpError(409, "Email in use");
     }
     const hashPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const avatarURL = gravatar.url(email);
+    
+    const newUser = await User.create({ ...req.body, password: hashPassword,subscription, avatarURL });
     res.status(201).json({
       user: {
         email: newUser.email,
-        subscription: newUser.subscription,
+            subscription: newUser.subscription,
+        avatarURL: newUser.avatarURL,
       },
     });
 }
@@ -78,10 +86,40 @@ const updateSubscription = async (req, res) => {
     res.json(result);
 }
 
+
+const updateAvatarUser = async (req, res) => {
+    if (!req.file) {
+        throw HttpError(400, "Аvatar is required");
+}
+
+  const { _id} = req.user;
+  const { path: oldPath, filename } = req.file;
+
+    await Jimp.read(oldPath)
+        .then((avatar) => {
+            return avatar
+        .resize(250, 250) //resize
+        .quality(60) //set JPEG quality
+        .write(oldPath); //save
+})
+    .catch ((error)=>{
+        throw error;
+    });
+    
+  const newPath = path.join(avatarDir, filename);
+
+  await fs.rename(oldPath, newPath);
+  const avatarURL = path.join("avatar", filename);
+
+  await User.findByIdAndUpdate(_id, {avatarURL});
+  res.status(201).json({ avatarURL });
+};
+
 module.exports = {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
   updateSubscription: ctrlWrapper(updateSubscription),
+  updateAvatarUser: ctrlWrapper(updateAvatarUser),
 };
